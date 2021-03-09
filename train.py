@@ -1,39 +1,54 @@
-#!/usr/bin/env python
+from sklearn import datasets, preprocessing
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier, export_graphviz, plot_tree
+from six import StringIO  
+from IPython.display import Image  
+import pydotplus
+from sklearn.metrics import accuracy_score
+import pandas as pd
+import matplotlib.pyplot as plt
 
-import numpy as np, chainer, chainer.functions as F, chainer.links as L
-from chainer import training, serializers
-from chainer.training import extensions
+# Read CSV file
+all_col = ['Heart rate', 'Acceleration', 'Temperature', 'Behavior'] 
+features = ['Heart rate', 'Acceleration', 'Temperature']
+ds = pd.read_csv("behavior.csv", header=None, names=all_col)
 
-class CPEN311NN(chainer.Chain):
-    def __init__(self):
-        super(CPEN311NN, self).__init__()
-        with self.init_scope():
-            self.l1 = L.Linear(None, 1000)
-            self.l2 = L.Linear(None, 1000) 
-            self.l3 = L.Linear(None, 10)
-    def forward(self, x):
-        o1 = F.relu(self.l1(x))
-        o2 = F.relu(self.l2(o1))
-        o3 = self.l3(o2)
-        return o3
+#Process label encoder to change categorical feature to numerical feature
+LabEnc = preprocessing.LabelEncoder()
+LabEnc.fit(ds['Behavior'])
+X= ds[features]
+Y= ds['Behavior']
 
-nn = L.Classifier(CPEN311NN())
+#80/20 train test split
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
 
-optimizer = chainer.optimizers.Adam()
-optimizer.setup(nn)
+#Train the model with built in decision tree algorithm in sklearn
+clf = DecisionTreeClassifier(criterion="entropy")
+clf = clf.fit(X_train, Y_train)
 
-train, test = chainer.datasets.get_mnist()
+#predict model
+Y_pred = clf.predict(X_test)
 
-train_iter = chainer.iterators.SerialIterator(train, 100)
-test_iter = chainer.iterators.SerialIterator(test, 100, repeat=False, shuffle=False)
+#show results
+print("Accuracy:", accuracy_score(Y_test, Y_pred))
+# print("Mean Squared Error (MSE): %.2f" % mean_squared_error(Y_test, Y_pred))
+# print("Coefficient of Determination (R^2): %.2f" % r2_score(Y_test, Y_pred))
 
-updater = training.updaters.StandardUpdater(train_iter, optimizer)
-trainer = training.Trainer(updater, (20, 'epoch'))
+print("Y_test expected: ", Y_test)
+print("Y predicted values: ", Y_pred)
 
-trainer.extend(extensions.Evaluator(test_iter, nn))
-trainer.extend(extensions.LogReport())
-trainer.extend(extensions.PrintReport(['epoch', 'main/loss', 'validation/main/loss', 'main/accuracy', 'validation/main/accuracy', 'elapsed_time']))
-trainer.extend(extensions.ProgressBar())
+# sns.scatterplot(x=Y_test, y=Y_pred)
+# plt.show()
 
-trainer.run()
-serializers.save_npz('cpen311_trained_nn.npz', nn)
+# dot_data = StringIO()
+# export_graphviz(clf, out_file=dot_data,  
+#                 filled=True, rounded=True,
+#                 special_characters=True, feature_names = features,class_names=['walking', 'running', 'sitting', 'sleeping'])
+# graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
+# graph.write_png('behavior.png')
+# Image(graph.create_png())
+# fig = plt.figure(figsize(25,20))
+_= plot_tree(clf, feature_names=features, class_names=['walking', 'running', 'sitting', 'sleeping'], filled=True)
+plt.savefig('behavior.png')
+
+# decision tree algoo/ random tree
