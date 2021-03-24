@@ -5,6 +5,8 @@ from sklearn.tree import DecisionTreeClassifier
 import pandas as pd
 import pickle
 
+# This program trains the model and uploads it to S3 bucket
+
 # Read CSV file
 all_col = ['Heart rate', 'Acceleration', 'Temperature', 'Behavior'] 
 features = ['Heart rate', 'Acceleration', 'Temperature']
