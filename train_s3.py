@@ -1,4 +1,6 @@
 import boto3
+import os
+from dotenv import load_dotenv
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
@@ -10,7 +12,7 @@ import pickle
 # Read CSV file
 all_col = ['Heart rate', 'Acceleration', 'Temperature', 'Behavior'] 
 features = ['Heart rate', 'Acceleration', 'Temperature']
-ds = pd.read_csv("behavior.csv", header=None, names=all_col)
+ds = pd.read_csv("tree_dataset/behavior.csv", header=None, names=all_col)
 
 #Process label encoder to change categorical feature to numerical feature
 LabEnc = preprocessing.LabelEncoder()
@@ -27,7 +29,9 @@ clf = clf.fit(X_train, Y_train)
 model = pickle.dumps(clf)
 
 # Remember to store AWS keys on env, don't push .env to remote
+load_dotenv()
 s3 = boto3.client('s3') 
+print(os.environ)
 response = s3.put_object(
     Bucket='behavior-model-bucket',
     Body=model,
