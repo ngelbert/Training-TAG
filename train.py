@@ -6,8 +6,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Read CSV file
-all_col = ['Heart rate', 'Acceleration', 'Temperature', 'Behavior'] 
-features = ['Heart rate', 'Acceleration', 'Temperature']
+all_col = ['Heart rate', 'AccelerationX', 'AccelerationY', 'AccelerationZ', 'Behavior'] 
+features = ['Heart rate', 'AccelerationX', 'AccelerationY',  'AccelerationZ']
 ds = pd.read_csv("tree_dataset/behavior.csv", header=None, names=all_col)
 
 #Process label encoder to change categorical feature to numerical feature
