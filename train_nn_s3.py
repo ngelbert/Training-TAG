@@ -87,6 +87,6 @@ plt.ylabel('Loss')
 plt.legend()
 plt.savefig('loss_nn_train.png')
 
-pickled_model = pickle.dumps(clf)
+pickled_model = pickle.dumps(model)
 
 # AWS associated code to store model in the back-end
