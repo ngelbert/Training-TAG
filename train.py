@@ -32,7 +32,7 @@ print("Accuracy:", accuracy_score(Y_test, Y_pred))
 print("Y_test expected: ", Y_test)
 print("Y predicted values: ", Y_pred)
 
-_= plot_tree(clf, feature_names=features, class_names=['walking', 'running', 'sitting', 'sleeping'], filled=True)
+_= plot_tree(clf, feature_names=features, class_names=['walking', 'abnormal', 'sitting', 'sleeping'], filled=True)
 plt.savefig('behavior.png')
 
 # decision tree algoo/ random tree
