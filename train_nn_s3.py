@@ -5,7 +5,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from tensorflow.keras import datasets, utils
 from PIL import Image, ImageOps
-import pickle
+import os
+import boto3
+from dotenv import load_dotenv
 
 pixelarea = 300*168
 ndataset = 246
@@ -78,7 +80,7 @@ history = model.fit(X_train, y_train, batch_size=128, epochs=40, verbose=2, vali
 print(history.history)
 loss_train = history.history['loss']
 loss_val = history.history['val_loss']
-epochs = range(1,31)
+epochs = range(1,41)
 plt.plot(epochs, loss_train, 'g', label='Training loss')
 plt.plot(epochs, loss_val, 'b', label='validation loss')
 plt.title('Training loss')
@@ -87,6 +89,15 @@ plt.ylabel('Loss')
 plt.legend()
 plt.savefig('loss_nn_train.png')
 
-pickled_model = pickle.dumps(model)
+#convert to json 
+model_json = model.to_json()
 
-# AWS associated code to store model in the back-end
+#send to s3bucket AWS
+load_dotenv()
+s3 = boto3.client('s3') 
+print(os.environ)
+response = s3.put_object(
+    Bucket='behavior-model-bucket',
+    Body=model_json,
+    Key='image-model'
+    )
