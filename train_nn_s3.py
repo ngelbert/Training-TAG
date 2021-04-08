@@ -9,7 +9,7 @@ import os
 import boto3
 from dotenv import load_dotenv
 
-pixelarea = 300*168
+pixelarea = 50*28
 ndataset = 246
 train_set = np.zeros((ndataset,pixelarea))
 y_set = np.zeros(ndataset)
@@ -19,7 +19,7 @@ for i in range(ndataset):
     og_image = Image.open("nn_dataset/image" + str(i) + ".jpg")
     
     # resize image to width of 300 with proper ratio 300 x 168
-    basewidth = 300
+    basewidth = 50
     wpercent = (basewidth / float(og_image.size[0]))
     hsize = int((float(og_image.size[1]) * float(wpercent)))
     og_img = og_image.resize((basewidth, hsize), Image.ANTIALIAS)
@@ -57,23 +57,25 @@ y_train = utils.to_categorical(y_train, n_classes)
 # Model uses cross entropy loss to calculate for the loss in training and validation
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(pixelarea,)),
-    keras.layers.Dense(units=1700, activation=tf.nn.relu, name="firstlayer", kernel_regularizer=keras.regularizers.l2(0.001)),
+    keras.layers.Dense(units=900, activation=tf.nn.relu, name="firstlayer", kernel_regularizer=keras.regularizers.l2(0.01)),
     keras.layers.Dropout(0.5),
-    keras.layers.Dense(units=1700, activation=tf.nn.relu, name="secondlayer", kernel_regularizer=keras.regularizers.l2(0.001)),
+    keras.layers.Dense(units=900, activation=tf.nn.relu, name="secondlayer", kernel_regularizer=keras.regularizers.l2(0.01)),
+    keras.layers.Dropout(0.5),
+    keras.layers.Dense(units=900, activation=tf.nn.relu, name="thirdlayer", kernel_regularizer=keras.regularizers.l2(0.01)),
     keras.layers.Dropout(0.5),
     keras.layers.Dense(units=2, activation=tf.nn.softmax, name="outputlayer")
 ])
 
 model.summary()
 
-adam = keras.optimizers.Adam(learning_rate=0.0005)
+adam = keras.optimizers.Adam(learning_rate=0.004)
 model.compile(optimizer=adam,
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 # Model is trained with batch_size of 128 and through a total of 40 epochs, with 10% of the training data used as validation set.
 
-history = model.fit(X_train, y_train, batch_size=128, epochs=40, verbose=2, validation_split=0.1)
+history = model.fit(X_train, y_train, batch_size=64, epochs=40, verbose=2, validation_split=0.1)
 
 # plotting graph of training and validation loss over the number of epochs to see the model
 
@@ -89,7 +91,7 @@ plt.ylabel('Loss')
 plt.legend()
 plt.savefig('loss_nn_train.png')
 
-#convert to json 
+#convert to json
 model_json = model.to_json()
 
 #send to s3bucket AWS
@@ -99,5 +101,5 @@ print(os.environ)
 response = s3.put_object(
     Bucket='behavior-model-bucket',
     Body=model_json,
-    Key='image-model'
+    Key='image-model.json'
     )
