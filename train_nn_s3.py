@@ -50,10 +50,10 @@ X_train = X_train / 255.0
 n_classes = 2
 y_train = utils.to_categorical(y_train, n_classes)
 
-# CNN model (Convoluted Neural Network) using 2 hidden layers each having 1700 nodes. 
+# CNN model (Convoluted Neural Network) using 3 hidden layers each having 900 nodes. 
 # Model uses ReLu activation function, and the softmax activation function at the output layer. 
-# Dropout of 0.5 and l2 regularizer of coefficient 0.001 is used to prevent overfitting
-# Model is at LR of 0.0005 with the adam optimizer (LR decay) 
+# Dropout of 0.5 and l2 regularizer of coefficient 0.01 is used to prevent overfitting
+# Model is at LR of 0.004 with the adam optimizer (LR decay) 
 # Model uses cross entropy loss to calculate for the loss in training and validation
 model = keras.Sequential([
     keras.layers.Flatten(input_shape=(pixelarea,)),
@@ -73,7 +73,7 @@ model.compile(optimizer=adam,
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-# Model is trained with batch_size of 128 and through a total of 40 epochs, with 10% of the training data used as validation set.
+# Model is trained with batch_size of 64 and through a total of 40 epochs, with 10% of the training data used as validation set.
 
 history = model.fit(X_train, y_train, batch_size=64, epochs=40, verbose=2, validation_split=0.1)
 
