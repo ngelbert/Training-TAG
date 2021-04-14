@@ -5,6 +5,8 @@ from sklearn.metrics import accuracy_score
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# File to test model through train and test split (Predict test data)
+
 # Read CSV file
 all_col = ['Heart rate', 'AccelerationX', 'AccelerationY', 'AccelerationZ', 'Behavior'] 
 features = ['Heart rate', 'AccelerationX', 'AccelerationY',  'AccelerationZ']

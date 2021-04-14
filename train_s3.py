@@ -30,7 +30,7 @@ plt.savefig('behavior.png')
 
 model = pickle.dumps(clf)
 
-# Remember to store AWS keys on env, don't push .env to remote
+# Send model through s3bucket to the AWS database 
 load_dotenv()
 s3 = boto3.client('s3') 
 print(os.environ)

@@ -9,6 +9,8 @@ import os
 import boto3
 from dotenv import load_dotenv
 
+# Used as backup in case fpga does not work (To cloud)
+
 pixelarea = 50*28
 ndataset = 246
 train_set = np.zeros((ndataset,pixelarea))
